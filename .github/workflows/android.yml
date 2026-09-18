@@ -60,3 +60,5 @@ jobs:
             app/build/reports/**
             app/build/outputs/lint-results-release.*
           if-no-files-found: ignore
+
+# meldpdf CI
