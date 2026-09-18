@@ -118,6 +118,26 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
+    }
+
+    composeOptions {
+        // Matches Kotlin 1.9.24 — see the Compose/Kotlin compatibility map.
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+    packaging {
+        resources {
+            // PDFBox-Android ships duplicate license/notice files that clash on merge.
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/*.kotlin_module"
+            )
+        }
     }
 
     lint {
@@ -144,6 +164,27 @@ dependencies {
     // Consent for EEA/UK users. Required by Google's EU user consent policy.
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("androidx.core:core-ktx:1.13.1")
+
+    // Jetpack Compose (Material 3) — the whole UI.
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
+    implementation(composeBom)
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Coroutines — PDF work runs off the main thread.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // PDFBox for Android (Apache-2.0) — merge/split/rotate/stamp/encrypt/text.
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    // On-device OCR for scanned PDFs/images (used from M3).
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     testImplementation("junit:junit:4.13.2")
 }
