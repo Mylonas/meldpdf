@@ -109,6 +109,7 @@ private fun ToolCard(tool: ToolDef, onOpen: (ToolDef) -> Unit) {
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
                 if (!tool.implemented) {
                     Spacer(Modifier.size(6.dp))
@@ -134,6 +135,6 @@ private fun SoonBadge() {
             .background(Color(0xFFF59E0B).copy(alpha = 0.18f))
             .padding(horizontal = 6.dp, vertical = 1.dp),
     ) {
-        Text("soon", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF92600A))
+        Text("soon", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF92600A), maxLines = 1, softWrap = false)
     }
 }
