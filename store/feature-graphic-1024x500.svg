@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Placeholder feature graphic for MeldPDF (1024x500). Replace with real
+     art that extends the icon's visual language; keep it opaque. Avoid putting
+     critical content in the outer edges — Play overlays UI there. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <rect width="1024" height="500" fill="#0B0B14"/>
+  <circle cx="250" cy="250" r="120" fill="none" stroke="#FFFFFF" stroke-width="32"/>
+  <circle cx="250" cy="250" r="36" fill="#FFFFFF"/>
+  <text x="470" y="272" font-family="Arial, Helvetica, sans-serif" font-size="72"
+        font-weight="700" fill="#FFFFFF">MeldPDF</text>
+</svg>

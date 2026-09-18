@@ -1,0 +1,3 @@
+# Drop 2–8 phone screenshots here (>=320px short side) for the Play listing.
+# The emulator workflow produces them: download the "<artifact>-emulator"
+# artifact and copy its shots/*.png into this folder.

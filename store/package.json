@@ -1,0 +1,14 @@
+{
+  "name": "meldpdf-store-assets",
+  "private": true,
+  "type": "module",
+  "description": "Render and validate Play store graphics for MeldPDF.",
+  "scripts": {
+    "gen": "node generate-store-assets.mjs",
+    "validate": "node validate-store-assets.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "sharp": "^0.33.4"
+  }
+}

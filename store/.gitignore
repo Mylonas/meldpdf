@@ -1,0 +1,4 @@
+node_modules/
+# Generated from the SVG sources — rebuild with `npm run gen`.
+icon-512.png
+feature-graphic-1024x500.png
