@@ -1,6 +1,22 @@
 # MeldPDF
 
-`com.mikmy.meldpdf` — an Android app built with the android-app-dev pipeline.
+`com.mikmy.meldpdf` — the native Android version of [meldpdf.com](https://meldpdf.com):
+every PDF tool, running entirely on-device. Nothing is uploaded. Built with the
+android-app-dev pipeline (Kotlin + Jetpack Compose, PDFBox-Android for document
+work, Android's PdfRenderer for rasterisation, ML Kit for OCR).
+
+## Tools
+
+| Group | Tools |
+| --- | --- |
+| Organize | Merge · Split/Extract · Delete pages · Rotate · *Organize (soon)* |
+| Convert | *Compress (soon)* · Images→PDF · PDF→JPG · PDF→PNG · *PDF→Word (soon)* |
+| Edit & stamp | Page numbers · Watermark · *Sign (soon)* |
+| Text | Extract text · *OCR (soon)* |
+| Security | Metadata view/strip · Protect/Unlock (password) |
+
+The pure page-range/format logic lives in `Rules.kt` and is unit-tested in CI;
+all PDF operations live in `pdf/PdfEngine.kt`.
 
 ## Building
 
@@ -18,10 +34,13 @@ To build locally instead, install Android Studio and run `./gradlew assembleDebu
 
 ## Architecture
 
-- `app/src/main/java/com/mikmy/meldpdf/Rules.kt` — pure logic, JVM-unit-tested, no Android imports.
-- `app/src/main/java/com/mikmy/meldpdf/MainActivity.kt` — the launch surface.
+- `Rules.kt` — pure logic (page-range parsing, size formatting), JVM-unit-tested, no Android imports.
+- `Tool.kt` — the tool catalog (mirrors the website's tool set).
+- `pdf/PdfEngine.kt` — all PDF operations (PDFBox + PdfRenderer).
+- `ui/` — Compose UI: `HomeScreen` (tool grid) and `ToolScreen` (pick → options → run → save/share).
+- `MainActivity.kt` / `MeldApp.kt` — Compose host and PDFBox init.
 
-Keep game/app rules in the pure layer so CI can validate them without an emulator.
+Keep app rules in the pure layer so CI can validate them without an emulator.
 
 ## Releasing
 

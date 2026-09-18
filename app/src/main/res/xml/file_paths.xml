@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Finished files are written to cache/out and shared from there. -->
+    <cache-path name="out" path="out/" />
+    <files-path name="files" path="/" />
+</paths>
