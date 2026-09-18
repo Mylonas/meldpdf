@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A bare no-action-bar framework theme is all Compose needs to host its
+         own Material 3 theming. Using a framework theme avoids pulling in the
+         Material Components XML library just for a base style. -->
+    <style name="Theme.MeldPDF" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/meld_bg</item>
+        <item name="android:statusBarColor">@color/meld_primary</item>
+        <item name="android:navigationBarColor">@color/meld_bg</item>
+    </style>
+</resources>
