@@ -62,3 +62,5 @@ jobs:
           name: meldpdf-emulator
           path: artifacts/**
           if-no-files-found: warn
+
+# meldpdf smoke test
