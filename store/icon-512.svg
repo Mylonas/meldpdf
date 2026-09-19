@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Placeholder store icon for MeldPDF. Replace with real art before
-     shipping; keep the full-frame background rect so the PNG stays opaque. -->
+<!-- MeldPDF store icon. Blue brand background, a white document with a folded
+     corner and a red PDF badge. Full-frame rect keeps the PNG opaque. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0B0B14"/>
-  <circle cx="256" cy="256" r="150" fill="none" stroke="#FFFFFF" stroke-width="40"/>
-  <circle cx="256" cy="256" r="46" fill="#FFFFFF"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- document with folded top-right corner -->
+  <path d="M160 104 H316 L372 160 V404 a20 20 0 0 1 -20 20 H160 a20 20 0 0 1 -20 -20 V124 a20 20 0 0 1 20 -20 Z" fill="#FFFFFF"/>
+  <path d="M316 104 L372 160 H316 Z" fill="#BBD0FF"/>
+  <!-- text lines -->
+  <rect x="176" y="212" width="120" height="16" rx="8" fill="#C7D2FE"/>
+  <rect x="176" y="246" width="160" height="16" rx="8" fill="#C7D2FE"/>
+  <!-- PDF badge -->
+  <rect x="176" y="300" width="160" height="66" rx="14" fill="#E5322D"/>
+  <text x="256" y="346" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#FFFFFF" text-anchor="middle">PDF</text>
 </svg>

@@ -1,15 +1,18 @@
 # Privacy Policy for MeldPDF
 
-_Last updated: 2026-09-18_
+_Last updated: 2026-09-19_
 
 MeldPDF ("the app") is developed by Mylonas. This policy explains what
 data the app handles.
 
 ## What the app itself collects
 
-Nothing that leaves your device. Game progress and settings (such as your high
-score) are stored locally on your device and are never transmitted to us. The
-app has no accounts, no login, and no analytics of our own.
+Nothing that leaves your device. Every PDF operation — merging, splitting,
+compressing, converting, OCR, signing, and the rest — runs entirely on your
+device. Your documents are never uploaded to us or to any server. The app has no
+accounts, no login, and no analytics of our own. Files you open are read only to
+perform the operation you asked for, and the result is saved only where you
+choose to save or share it.
 
 ## Advertising
 
