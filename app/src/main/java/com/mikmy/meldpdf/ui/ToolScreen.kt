@@ -72,6 +72,7 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var unlockMode by remember { mutableStateOf(false) }
     var rotation by remember { mutableStateOf(Rotation.CW90) }
+    var compressLevel by remember { mutableStateOf(PdfEngine.CompressLevel.BALANCED) }
 
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -109,6 +110,8 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
                     "img2pdf" -> PdfEngine.imagesToPdf(bytes)
                     "pdf2img" -> PdfEngine.pdfToImages(bytes.first(), png = false, cacheDir = context.cacheDir)
                     "pdf2png" -> PdfEngine.pdfToImages(bytes.first(), png = true, cacheDir = context.cacheDir)
+                    "compress" -> PdfEngine.compress(bytes.first(), compressLevel, context.cacheDir)
+                    "pdf2word" -> PdfEngine.pdfToDocx(bytes.first())
                     "pagenum" -> PdfEngine.addPageNumbers(bytes.first())
                     "watermark" -> PdfEngine.watermark(bytes.first(), watermarkText)
                     "extract" -> PdfEngine.extractText(bytes.first())
@@ -191,6 +194,15 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
                         )
                     }
                 }
+                "compress" -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PdfEngine.CompressLevel.entries.forEach { lvl ->
+                        FilterChip(
+                            selected = compressLevel == lvl,
+                            onClick = { compressLevel = lvl },
+                            label = { Text(lvl.label) },
+                        )
+                    }
+                }
                 "protect" -> Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(selected = !unlockMode, onClick = { unlockMode = false }, label = { Text("Add password") })
@@ -237,6 +249,11 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
                     is ToolResult.FileOut -> FileResult(r, context, clipboard)
                     is ToolResult.TextOut -> TextResult(r, clipboard, context)
                     is ToolResult.MetaOut -> MetaResult(r, context, clipboard)
+                    is ToolResult.CompareOut -> Column {
+                        InfoCard(r.summary)
+                        Spacer(Modifier.height(12.dp))
+                        FileResult(r.file, context, clipboard)
+                    }
                 }
             }
         }
@@ -339,15 +356,4 @@ private fun MetaResult(
     }
 }
 
-/** Write [bytes] to cache/out and hand them to another app via the FileProvider. */
-private fun shareBytes(context: android.content.Context, bytes: ByteArray, name: String, mime: String) {
-    val dir = File(context.cacheDir, "out").apply { mkdirs() }
-    val file = File(dir, name).apply { writeBytes(bytes) }
-    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = mime
-        putExtra(Intent.EXTRA_STREAM, uri)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    context.startActivity(Intent.createChooser(intent, "Share").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-}
+// shareBytes lives in Io.kt (shared with the custom screens).

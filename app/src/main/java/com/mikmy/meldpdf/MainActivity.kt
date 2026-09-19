@@ -12,6 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.activity.compose.BackHandler
 import com.mikmy.meldpdf.ui.HomeScreen
 import com.mikmy.meldpdf.ui.MeldTheme
+import com.mikmy.meldpdf.ui.OrganizeScreen
+import com.mikmy.meldpdf.ui.SignScreen
 import com.mikmy.meldpdf.ui.ToolScreen
 
 class MainActivity : ComponentActivity() {
@@ -26,8 +28,13 @@ class MainActivity : ComponentActivity() {
                 if (tool == null) {
                     HomeScreen(onOpen = { toolId = it.id })
                 } else {
-                    BackHandler { toolId = null }
-                    ToolScreen(tool = tool, onBack = { toolId = null })
+                    val back = { toolId = null }
+                    BackHandler(onBack = back)
+                    when (tool.id) {
+                        "organize" -> OrganizeScreen(onBack = back)
+                        "sign" -> SignScreen(onBack = back)
+                        else -> ToolScreen(tool = tool, onBack = back)
+                    }
                 }
             }
         }
