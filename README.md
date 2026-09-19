@@ -9,9 +9,9 @@ work, Android's PdfRenderer for rasterisation, ML Kit for OCR).
 
 | Group | Tools |
 | --- | --- |
-| Organize | Merge · Split/Extract · Delete pages · Rotate · *Organize (soon)* |
-| Convert | *Compress (soon)* · Images→PDF · PDF→JPG · PDF→PNG · *PDF→Word (soon)* |
-| Edit & stamp | Page numbers · Watermark · *Sign (soon)* |
+| Organize | Merge · Split/Extract · Delete pages · Rotate · Organize (reorder/rotate/delete) |
+| Convert | Compress · Images→PDF · PDF→JPG · PDF→PNG · PDF→Word (.docx) |
+| Edit & stamp | Page numbers · Watermark · Sign (draw + place) |
 | Text | Extract text · *OCR (soon)* |
 | Security | Metadata view/strip · Protect/Unlock (password) |
 

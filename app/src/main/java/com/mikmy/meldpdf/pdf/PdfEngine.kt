@@ -37,6 +37,8 @@ sealed interface ToolResult {
     data class TextOut(val text: String, val stats: String) : ToolResult
     /** Metadata rows plus a cleaned copy of the document. */
     data class MetaOut(val rows: List<Pair<String, String>>, val cleaned: FileOut) : ToolResult
+    /** A produced file plus a human "before → after" summary (compress). */
+    data class CompareOut(val file: FileOut, val summary: String) : ToolResult
 }
 
 /** Rotation choices offered by the rotate tool. */
@@ -277,4 +279,221 @@ object PdfEngine {
                 ToolResult.FileOut(doc.toBytes(), "unlocked.pdf", PDF_MIME)
             }
         }
+
+    // ---- Compress ---------------------------------------------------------
+
+    /** How hard to squeeze: lower dpi + jpeg quality = smaller file. */
+    enum class CompressLevel(val dpi: Int, val quality: Float, val label: String) {
+        STRONG(96, 0.5f, "Strong"),
+        BALANCED(144, 0.7f, "Balanced"),
+        LIGHT(200, 0.82f, "Light"),
+    }
+
+    /**
+     * Rasterise each page to a JPEG and rebuild the PDF from those images. This
+     * is the reliable mobile approach — it shrinks scanned/image-heavy PDFs a
+     * lot. Text becomes non-selectable (it's now an image), which is the trade
+     * for the size win. Returns the original + new size for the UI to compare.
+     */
+    suspend fun compress(input: ByteArray, level: CompressLevel, cacheDir: File): ToolResult =
+        withContext(Dispatchers.Default) {
+            val staged = File.createTempFile("cin", ".pdf", cacheDir).apply { writeBytes(input) }
+            try {
+                ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        PDDocument().use { out ->
+                            val scale = level.dpi / 72f
+                            for (i in 0 until renderer.pageCount) {
+                                renderer.openPage(i).use { page ->
+                                    val wPt = page.width.toFloat()
+                                    val hPt = page.height.toFloat()
+                                    val w = (wPt * scale).toInt().coerceAtLeast(1)
+                                    val h = (hPt * scale).toInt().coerceAtLeast(1)
+                                    val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                    bmp.eraseColor(android.graphics.Color.WHITE)
+                                    page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                    val pdPage = PDPage(PDRectangle(wPt, hPt))
+                                    out.addPage(pdPage)
+                                    val image = JPEGFactory.createFromImage(out, bmp, level.quality)
+                                    PDPageContentStream(out, pdPage).use { cs ->
+                                        cs.drawImage(image, 0f, 0f, wPt, hPt)
+                                    }
+                                    bmp.recycle()
+                                }
+                            }
+                            val bytes = out.toBytes()
+                            val before = Rules.formatSize(input.size.toLong())
+                            val after = Rules.formatSize(bytes.size.toLong())
+                            val pct = if (input.isNotEmpty())
+                                (100 - bytes.size * 100L / input.size).coerceAtLeast(0) else 0
+                            ToolResult.CompareOut(
+                                ToolResult.FileOut(bytes, "compressed.pdf", PDF_MIME),
+                                "$before → $after  (${pct}% smaller)",
+                            )
+                        }
+                    }
+                }
+            } finally {
+                staged.delete()
+            }
+        }
+
+    // ---- PDF -> Word (.docx) ---------------------------------------------
+
+    /**
+     * Extract text and wrap it in a minimal-but-valid .docx (OOXML zip), one
+     * paragraph per line. No formatting is recovered — this is the same "text
+     * into an editable document" behaviour as the web app.
+     */
+    suspend fun pdfToDocx(input: ByteArray): ToolResult =
+        withContext(Dispatchers.Default) {
+            val text = PDDocument.load(input).use { PDFTextStripper().getText(it) }
+            val paras = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+                .joinToString("") { line ->
+                    "<w:p><w:r><w:t xml:space=\"preserve\">${xml(line)}</w:t></w:r></w:p>"
+                }
+            val documentXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                "<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" +
+                "<w:body>$paras</w:body></w:document>"
+            val bytes = ByteArrayOutputStream().also { baos ->
+                ZipOutputStream(baos).use { zip ->
+                    fun entry(name: String, content: String) {
+                        zip.putNextEntry(ZipEntry(name))
+                        zip.write(content.toByteArray(Charsets.UTF_8))
+                        zip.closeEntry()
+                    }
+                    entry(
+                        "[Content_Types].xml",
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">" +
+                        "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>" +
+                        "<Default Extension=\"xml\" ContentType=\"application/xml\"/>" +
+                        "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>" +
+                        "</Types>",
+                    )
+                    entry(
+                        "_rels/.rels",
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                        "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/>" +
+                        "</Relationships>",
+                    )
+                    entry("word/document.xml", documentXml)
+                }
+            }.toByteArray()
+            ToolResult.FileOut(
+                bytes, "converted.docx",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+        }
+
+    private fun xml(s: String): String = s
+        .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        .replace("\"", "&quot;").replace("'", "&apos;")
+
+    // ---- Organize / Sign helpers (used by their own screens) --------------
+
+    /** Render one page to a bitmap at [targetWidthPx] wide (for previews/thumbs). */
+    suspend fun renderPage(input: ByteArray, index: Int, targetWidthPx: Int, cacheDir: File): Bitmap =
+        withContext(Dispatchers.Default) {
+            val staged = File.createTempFile("rp", ".pdf", cacheDir).apply { writeBytes(input) }
+            try {
+                ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        renderer.openPage(index).use { page ->
+                            val scale = targetWidthPx.toFloat() / page.width
+                            val w = targetWidthPx.coerceAtLeast(1)
+                            val h = (page.height * scale).toInt().coerceAtLeast(1)
+                            val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                            bmp.eraseColor(android.graphics.Color.WHITE)
+                            page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                            bmp
+                        }
+                    }
+                }
+            } finally {
+                staged.delete()
+            }
+        }
+
+    /** Number of pages in a PDF. */
+    suspend fun pageCount(input: ByteArray): Int =
+        withContext(Dispatchers.Default) { PDDocument.load(input).use { it.numberOfPages } }
+
+    /** Render every page to a small bitmap in one pass (for the organize grid). */
+    suspend fun renderThumbnails(input: ByteArray, widthPx: Int, cacheDir: File): List<Bitmap> =
+        withContext(Dispatchers.Default) {
+            val staged = File.createTempFile("th", ".pdf", cacheDir).apply { writeBytes(input) }
+            try {
+                ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    PdfRenderer(pfd).use { renderer ->
+                        (0 until renderer.pageCount).map { i ->
+                            renderer.openPage(i).use { page ->
+                                val scale = widthPx.toFloat() / page.width
+                                val w = widthPx.coerceAtLeast(1)
+                                val h = (page.height * scale).toInt().coerceAtLeast(1)
+                                val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                                bmp.eraseColor(android.graphics.Color.WHITE)
+                                page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                bmp
+                            }
+                        }
+                    }
+                }
+            } finally {
+                staged.delete()
+            }
+        }
+
+    /** Point dimensions (width, height) of a page — for mapping sign coords. */
+    suspend fun pagePointSize(input: ByteArray, index: Int): Pair<Float, Float> =
+        withContext(Dispatchers.Default) {
+            PDDocument.load(input).use { doc ->
+                val box = doc.getPage(index).mediaBox
+                box.width to box.height
+            }
+        }
+
+    /**
+     * Rebuild a PDF from the original pages in [order] (zero-based indices into
+     * the source), adding [extraRotation] degrees to each. Preserves vector
+     * quality — the pages are imported, not rasterised.
+     */
+    suspend fun reorganize(
+        input: ByteArray, order: List<Int>, extraRotation: Map<Int, Int>,
+    ): ToolResult = withContext(Dispatchers.Default) {
+        require(order.isNotEmpty()) { "No pages left to save." }
+        PDDocument.load(input).use { src ->
+            PDDocument().use { dst ->
+                for (i in order) {
+                    val imported = dst.importPage(src.getPage(i))
+                    val extra = extraRotation[i] ?: 0
+                    imported.rotation = (imported.rotation + extra) % 360
+                }
+                ToolResult.FileOut(dst.toBytes(), "organized.pdf", PDF_MIME)
+            }
+        }
+    }
+
+    /**
+     * Stamp [signature] onto [pageIndex] at PDF-point rectangle (x, y from the
+     * bottom-left, width/height in points). Called by the sign screen after it
+     * maps preview coordinates to page points.
+     */
+    suspend fun placeSignature(
+        input: ByteArray, pageIndex: Int, signature: Bitmap,
+        xPt: Float, yPt: Float, wPt: Float, hPt: Float,
+    ): ToolResult = withContext(Dispatchers.Default) {
+        PDDocument.load(input).use { doc ->
+            val page = doc.getPage(pageIndex)
+            val image = LosslessFactory.createFromImage(doc, signature)
+            PDPageContentStream(
+                doc, page, PDPageContentStream.AppendMode.APPEND, true, true
+            ).use { cs ->
+                cs.drawImage(image, xPt, yPt, wPt, hPt)
+            }
+            ToolResult.FileOut(doc.toBytes(), "signed.pdf", PDF_MIME)
+        }
+    }
 }

@@ -54,17 +54,17 @@ object Tools {
         ToolDef("split", "Split / Extract", "Pull out specific pages", Icons.Filled.ContentCut, Accept.PDF, multi = false, category = Category.ORGANIZE),
         ToolDef("delete", "Delete pages", "Remove unwanted pages", Icons.Filled.Delete, Accept.PDF, multi = false, category = Category.ORGANIZE),
         ToolDef("rotate", "Rotate PDF", "Fix page orientation", Icons.Filled.RotateRight, Accept.PDF, multi = false, category = Category.ORGANIZE),
-        ToolDef("organize", "Organize pages", "Reorder and arrange", Icons.Filled.Dashboard, Accept.PDF, multi = false, category = Category.ORGANIZE, implemented = false),
+        ToolDef("organize", "Organize pages", "Reorder and arrange", Icons.Filled.Dashboard, Accept.PDF, multi = false, category = Category.ORGANIZE),
         // Convert
-        ToolDef("compress", "Compress PDF", "Reduce file size", Icons.Filled.Compress, Accept.PDF, multi = false, category = Category.CONVERT, implemented = false),
+        ToolDef("compress", "Compress PDF", "Reduce file size", Icons.Filled.Compress, Accept.PDF, multi = false, category = Category.CONVERT),
         ToolDef("img2pdf", "Images → PDF", "JPG/PNG to PDF", Icons.Filled.Image, Accept.IMAGE, multi = true, category = Category.CONVERT),
         ToolDef("pdf2img", "PDF → JPG", "Every page as a JPG", Icons.Filled.PhotoLibrary, Accept.PDF, multi = false, category = Category.CONVERT),
         ToolDef("pdf2png", "PDF → PNG", "Every page as a PNG", Icons.Filled.Palette, Accept.PDF, multi = false, category = Category.CONVERT),
-        ToolDef("pdf2word", "PDF → Word", "Text to editable .docx", Icons.Filled.Article, Accept.PDF, multi = false, category = Category.CONVERT, implemented = false),
+        ToolDef("pdf2word", "PDF → Word", "Text to editable .docx", Icons.Filled.Article, Accept.PDF, multi = false, category = Category.CONVERT),
         // Edit & stamp
         ToolDef("pagenum", "Page numbers", "Stamp page numbers", Icons.Filled.Tag, Accept.PDF, multi = false, category = Category.EDIT),
         ToolDef("watermark", "Watermark", "Add a text overlay", Icons.Filled.WaterDrop, Accept.PDF, multi = false, category = Category.EDIT),
-        ToolDef("sign", "Sign PDF", "Draw your signature", Icons.Filled.Draw, Accept.PDF, multi = false, category = Category.EDIT, implemented = false),
+        ToolDef("sign", "Sign PDF", "Draw your signature", Icons.Filled.Draw, Accept.PDF, multi = false, category = Category.EDIT),
         // Text
         ToolDef("extract", "Extract text", "Copy text from a PDF", Icons.Filled.Description, Accept.PDF, multi = false, category = Category.TEXT),
         ToolDef("ocr", "OCR scanned", "Read scanned text", Icons.Filled.Visibility, Accept.PDF_OR_IMAGE, multi = false, category = Category.TEXT, implemented = false),
