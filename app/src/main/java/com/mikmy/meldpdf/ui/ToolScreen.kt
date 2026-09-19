@@ -61,7 +61,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
+fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val clipboard = LocalClipboardManager.current
@@ -121,6 +121,7 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit) {
                     else -> throw IllegalStateException("This tool is coming in a later update.")
                 }
                 result = r
+                onDone()
             } catch (e: Exception) {
                 error = e.message ?: "Something went wrong."
             } finally {

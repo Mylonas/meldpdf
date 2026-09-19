@@ -60,7 +60,7 @@ private class PageItem(val originalIndex: Int, val rotation: Int, val thumb: Ima
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrganizeScreen(onBack: () -> Unit) {
+fun OrganizeScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -109,6 +109,7 @@ fun OrganizeScreen(onBack: () -> Unit) {
                 val order = pages.map { it.originalIndex }
                 val rot = pages.associate { it.originalIndex to it.rotation }
                 result = PdfEngine.reorganize(src, order, rot) as ToolResult.FileOut
+                onDone()
             } catch (e: Exception) {
                 error = e.message ?: "Could not save."
             } finally {

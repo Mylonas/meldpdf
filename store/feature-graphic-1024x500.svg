@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Placeholder feature graphic for MeldPDF (1024x500). Replace with real
-     art that extends the icon's visual language; keep it opaque. Avoid putting
-     critical content in the outer edges — Play overlays UI there. -->
+<!-- MeldPDF feature graphic (1024x500). Extends the icon's language: blue brand,
+     document motif on the left, wordmark + tagline on the right. Kept opaque and
+     with critical content away from the edges (Play overlays UI there). -->
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
-  <rect width="1024" height="500" fill="#0B0B14"/>
-  <circle cx="250" cy="250" r="120" fill="none" stroke="#FFFFFF" stroke-width="32"/>
-  <circle cx="250" cy="250" r="36" fill="#FFFFFF"/>
-  <text x="470" y="272" font-family="Arial, Helvetica, sans-serif" font-size="72"
-        font-weight="700" fill="#FFFFFF">MeldPDF</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#1E3A8A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="500" fill="url(#bg)"/>
+  <!-- document motif -->
+  <g transform="translate(120 130)">
+    <path d="M0 0 H150 L204 54 V276 a18 18 0 0 1 -18 18 H0 a18 18 0 0 1 -18 -18 V18 a18 18 0 0 1 18 -18 Z" fill="#FFFFFF"/>
+    <path d="M150 0 L204 54 H150 Z" fill="#BBD0FF"/>
+    <rect x="34" y="150" width="96" height="14" rx="7" fill="#C7D2FE"/>
+    <rect x="34" y="180" width="130" height="14" rx="7" fill="#C7D2FE"/>
+    <rect x="34" y="216" width="130" height="52" rx="12" fill="#E5322D"/>
+    <text x="99" y="252" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">PDF</text>
+  </g>
+  <!-- wordmark + tagline -->
+  <text x="430" y="240" font-family="Arial, Helvetica, sans-serif" font-size="86" font-weight="800" fill="#FFFFFF">MeldPDF</text>
+  <text x="432" y="300" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500" fill="#DBE7FF">Every PDF tool. On your phone.</text>
+  <text x="432" y="346" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="400" fill="#BBD0FF">Merge · Split · Compress · Convert · Sign — on-device</text>
 </svg>

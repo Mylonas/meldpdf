@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignScreen(onBack: () -> Unit) {
+fun SignScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -148,6 +148,7 @@ fun SignScreen(onBack: () -> Unit) {
                 val xPt = (wPt - sigWpt) * posX
                 val yPt = (hPt - sigHpt) * (1f - posY)
                 result = PdfEngine.placeSignature(bytes, pageIndex, sig, xPt, yPt, sigWpt, sigHpt) as ToolResult.FileOut
+                onDone()
             } catch (e: Exception) {
                 error = e.message ?: "Could not sign."
             } finally {
