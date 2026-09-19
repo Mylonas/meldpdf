@@ -17,13 +17,18 @@ import com.mikmy.meldpdf.ui.SignScreen
 import com.mikmy.meldpdf.ui.ToolScreen
 
 class MainActivity : ComponentActivity() {
+    private lateinit var ads: Ads
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        ads = Ads(this)
+        ads.start()
         setContent {
             MeldTheme {
                 var toolId by rememberSaveable { mutableStateOf<String?>(null) }
                 val tool = remember(toolId) { toolId?.let { Tools.byId(it) } }
+                val onDone = { ads.onOperationDone() }
 
                 if (tool == null) {
                     HomeScreen(onOpen = { toolId = it.id })
@@ -31,9 +36,9 @@ class MainActivity : ComponentActivity() {
                     val back = { toolId = null }
                     BackHandler(onBack = back)
                     when (tool.id) {
-                        "organize" -> OrganizeScreen(onBack = back)
-                        "sign" -> SignScreen(onBack = back)
-                        else -> ToolScreen(tool = tool, onBack = back)
+                        "organize" -> OrganizeScreen(onBack = back, onDone = onDone)
+                        "sign" -> SignScreen(onBack = back, onDone = onDone)
+                        else -> ToolScreen(tool = tool, onBack = back, onDone = onDone)
                     }
                 }
             }
