@@ -71,6 +71,7 @@ android {
         versionCode = secretProp("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = secretProp("VERSION_NAME") ?: "1.0.0"
         resourceConfigurations += setOf("en")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_APP_ID", "\"$admobAppId\"")
@@ -187,4 +188,10 @@ dependencies {
     implementation("com.google.mlkit:text-recognition:16.0.1")
 
     testImplementation("junit:junit:4.13.2")
+
+    // On-device (instrumented) tests — exercise PdfEngine against real PDFs on
+    // the emulator, since PDFBox + PdfRenderer need the Android runtime.
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core-ktx:1.6.1")
 }

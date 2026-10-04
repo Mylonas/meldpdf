@@ -137,7 +137,7 @@ object PdfEngine {
      */
     suspend fun pdfToImages(input: ByteArray, png: Boolean, cacheDir: File): ToolResult =
         withContext(Dispatchers.Default) {
-            val staged = File.createTempFile("in", ".pdf", cacheDir).apply { writeBytes(input) }
+            val staged = File.createTempFile("render_in", ".pdf", cacheDir).apply { writeBytes(input) }
             try {
                 ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                     PdfRenderer(pfd).use { renderer ->
@@ -397,7 +397,7 @@ object PdfEngine {
     /** Render one page to a bitmap at [targetWidthPx] wide (for previews/thumbs). */
     suspend fun renderPage(input: ByteArray, index: Int, targetWidthPx: Int, cacheDir: File): Bitmap =
         withContext(Dispatchers.Default) {
-            val staged = File.createTempFile("rp", ".pdf", cacheDir).apply { writeBytes(input) }
+            val staged = File.createTempFile("render_pg", ".pdf", cacheDir).apply { writeBytes(input) }
             try {
                 ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                     PdfRenderer(pfd).use { renderer ->
@@ -424,7 +424,7 @@ object PdfEngine {
     /** Render every page to a small bitmap in one pass (for the organize grid). */
     suspend fun renderThumbnails(input: ByteArray, widthPx: Int, cacheDir: File): List<Bitmap> =
         withContext(Dispatchers.Default) {
-            val staged = File.createTempFile("th", ".pdf", cacheDir).apply { writeBytes(input) }
+            val staged = File.createTempFile("render_th", ".pdf", cacheDir).apply { writeBytes(input) }
             try {
                 ParcelFileDescriptor.open(staged, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                     PdfRenderer(pfd).use { renderer ->
