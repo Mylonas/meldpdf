@@ -51,16 +51,22 @@ jobs:
           ram-size: 4096M
           disable-animations: false
           emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -no-boot-anim -camera-back none
-          # Second arg controls the input style: "drag" (swipe/tap games) or
-          # "hold" (press-and-release games). Adjust play.sh for your controls.
-          script: bash .github/scripts/play.sh com.mikmy.meldpdf drag
+          # First the smoke test (captures screenshots), then the instrumented
+          # PdfEngine tests against real PDFs on this same booted emulator. A
+          # test failure fails the job; screenshots are still uploaded (always()).
+          script: |
+            bash .github/scripts/play.sh com.mikmy.meldpdf drag
+            gradle --no-daemon connectedDebugAndroidTest
 
-      - name: Upload screenshots and logs
+      - name: Upload screenshots, logs and test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: meldpdf-emulator
-          path: artifacts/**
+          path: |
+            artifacts/**
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
           if-no-files-found: warn
 
 # meldpdf smoke test
