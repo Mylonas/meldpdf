@@ -18,21 +18,15 @@ Package name — **permanent**, cannot change after first upload:
 
 ---
 
-## 1. Host the privacy policy  ·  *required by Play (the app uses the ad ID)*
+## 1. Privacy policy URL  ·  *required by Play (the app uses the ad ID)*
 
-The policy is already built as a static page under `docs/`. Two ways to host it:
+Hosted with your other apps' policies in the `Mylonas/privacy` repo (GitHub
+Pages), already live:
 
-**A. GitHub Pages (zero extra setup)**
-1. Land `docs/` on the default branch (merge this branch).
-2. Repo **Settings → Pages → Build and deployment → Deploy from a branch**,
-   branch `master`, folder `/docs`, Save.
-3. After a minute the policy is live at:
-   **`https://mylonas.github.io/meldpdf/privacy/`**
+**`https://mylonas.github.io/privacy/meldpdf.html`**
 
-**B. Your own domain** — host `PRIVACY.md`'s content at e.g.
-`https://meldpdf.com/app-privacy` and use that URL instead.
-
-Use whichever URL in step 4 (App content → Privacy policy).
+Use it in step 4 (App content → Privacy policy). Contact email on the listing:
+`mikmylona@gmail.com` (same as the other apps).
 
 ---
 
@@ -141,7 +135,7 @@ uploaded.
 | App icon + feature graphic | ✅ generated + validated |
 | Listing text + data-safety answers | ✅ `store/listing.md` |
 | What's-new note | ✅ `distribution/whatsnew/` |
-| Privacy policy page | ✅ built under `docs/` — host per step 1 |
+| Privacy policy page | ✅ live at mylonas.github.io/privacy/meldpdf.html |
 | Repo secrets (signing, AdMob, Play SA) | ⬜ step 2–3 (you) |
 | Play Console app + listing + content | ⬜ step 4 (you) |
 | Screenshots uploaded | ⬜ from emulator artifact (step 4) |

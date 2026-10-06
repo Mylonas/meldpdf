@@ -52,7 +52,5 @@ paste-ready listing text in `store/listing.md`, and the android-app-dev skill's
 ## Privacy
 
 `PRIVACY.md` is the privacy policy (required by Play because the app collects the
-advertising ID). A ready-to-host static version lives under `docs/`; enable
-GitHub Pages (Deploy from branch `master`, folder `/docs`) to serve it at
-`https://mylonas.github.io/meldpdf/privacy/`, then paste that URL into the Play
-listing. See `TESTING.md` step 1.
+advertising ID). It is hosted with the other apps' policies at
+`https://mylonas.github.io/privacy/meldpdf.html` (repo `Mylonas/privacy`).

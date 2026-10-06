@@ -1,6 +1,6 @@
 # Privacy Policy for MeldPDF
 
-_Last updated: 2026-09-19_
+_Last updated: 2026-10-06_
 
 MeldPDF ("the app") is developed by Mylonas. This policy explains what
 data the app handles.
@@ -41,4 +41,4 @@ under 13.
 
 ## Contact
 
-Questions about this policy: **mylonasmichalis96@gmail.com**
+Questions about this policy: **mikmylona@gmail.com**
