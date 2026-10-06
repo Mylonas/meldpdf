@@ -1,4 +1,6 @@
 name: Signed release bundle
+# (Edited after the initial commit so GitHub registers this workflow; files
+# pushed only in a repo's first commit are not picked up as dispatchable.)
 
 # Builds the AAB you upload to Play, signed with your upload key, but does NOT
 # push it anywhere. Use this to get a signed artifact for manual upload or to
