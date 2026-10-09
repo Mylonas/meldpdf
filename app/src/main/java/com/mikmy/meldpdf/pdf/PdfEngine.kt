@@ -18,6 +18,8 @@ import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.JPEGFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.image.LosslessFactory
 import com.tom_roush.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
+import com.tom_roush.pdfbox.pdmodel.interactive.form.PDField
+import com.tom_roush.pdfbox.pdmodel.interactive.form.PDNonTerminalField
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.util.Matrix
 import kotlinx.coroutines.Dispatchers
@@ -229,12 +231,38 @@ object PdfEngine {
     suspend fun extractText(input: ByteArray): ToolResult =
         withContext(Dispatchers.Default) {
             PDDocument.load(input).use { doc ->
-                val text = PDFTextStripper().getText(doc)
+                val text = fullText(doc)
                 val words = text.split(Regex("\\s+")).count { it.isNotBlank() }
                 val stats = "${doc.numberOfPages} pages · $words words · ${text.length} characters"
                 ToolResult.TextOut(text, stats)
             }
         }
+
+    private fun fullText(doc: PDDocument): String {
+        val stripper = PDFTextStripper().apply { sortByPosition = true }
+        val body = stripper.getText(doc)
+        val formText = formFieldText(doc)
+        return if (formText.isEmpty()) body
+        else body.trimEnd() + "\n\n--- Form fields ---\n" + formText
+    }
+
+    private fun formFieldText(doc: PDDocument): String {
+        val form = doc.documentCatalog.acroForm ?: return ""
+        val sb = StringBuilder()
+        fun walk(fields: List<PDField>) {
+            for (f in fields) {
+                if (f is PDNonTerminalField) {
+                    walk(f.children)
+                } else {
+                    val v = f.valueAsString?.takeIf { it.isNotBlank() } ?: continue
+                    val label = f.partialName ?: f.fullyQualifiedName ?: "field"
+                    sb.appendLine("$label: $v")
+                }
+            }
+        }
+        walk(form.fields)
+        return sb.toString()
+    }
 
     // ---- Security ---------------------------------------------------------
 
@@ -347,7 +375,7 @@ object PdfEngine {
      */
     suspend fun pdfToDocx(input: ByteArray): ToolResult =
         withContext(Dispatchers.Default) {
-            val text = PDDocument.load(input).use { PDFTextStripper().getText(it) }
+            val text = PDDocument.load(input).use { fullText(it) }
             val paras = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
                 .joinToString("") { line ->
                     "<w:p><w:r><w:t xml:space=\"preserve\">${xml(line)}</w:t></w:r></w:p>"
