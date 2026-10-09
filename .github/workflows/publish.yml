@@ -40,6 +40,7 @@ on:
           - internal
           - alpha
           - beta
+          - production
         default: internal
       status:
         description: "Release status — an app that has never been published only accepts 'draft'"
