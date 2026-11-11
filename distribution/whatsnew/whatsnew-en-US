@@ -1,6 +1,3 @@
-MeldPDF is here — every PDF tool, right on your phone, with nothing uploaded.
-
-Merge, split, delete and rotate pages; reorganise a document; compress; convert
-images to PDF and PDF to JPG/PNG or Word; add page numbers, watermarks or your
-signature; extract text; view and strip metadata; and password-protect or unlock
-PDFs. Everything runs on-device.
+Improved text extraction — text now comes out in proper reading order, and
+filled form fields are no longer silently skipped. Both Extract Text and
+PDF → Word benefit from this fix.
