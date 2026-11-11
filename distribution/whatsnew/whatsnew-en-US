@@ -1,3 +1,1 @@
-Improved text extraction — text now comes out in proper reading order, and
-filled form fields are no longer silently skipped. Both Extract Text and
-PDF → Word benefit from this fix.
+Added a "Privacy choices" link on the home screen for users in the EEA, UK and Switzerland, and updated the app libraries.

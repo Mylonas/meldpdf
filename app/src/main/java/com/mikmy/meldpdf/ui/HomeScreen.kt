@@ -37,7 +37,7 @@ import com.mikmy.meldpdf.ToolDef
 import com.mikmy.meldpdf.Tools
 
 @Composable
-fun HomeScreen(onOpen: (ToolDef) -> Unit) {
+fun HomeScreen(onOpen: (ToolDef) -> Unit, onPrivacyChoices: (() -> Unit)? = null) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         val byCat = Tools.all.groupBy { it.category }
         LazyVerticalGrid(
@@ -73,6 +73,19 @@ fun HomeScreen(onOpen: (ToolDef) -> Unit) {
                     )
                 }
                 items(tools) { tool -> ToolCard(tool, onOpen) }
+            }
+            if (onPrivacyChoices != null) {
+                item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                    Text(
+                        "Privacy choices",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .clickable { onPrivacyChoices() }
+                            .padding(vertical = 8.dp),
+                    )
+                }
             }
         }
     }
