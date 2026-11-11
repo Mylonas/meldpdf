@@ -18,11 +18,14 @@ import com.mikmy.meldpdf.ui.ToolScreen
 
 class MainActivity : ComponentActivity() {
     private lateinit var ads: Ads
+    private var privacyOptionsRequired by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         ads = Ads(this)
+        ads.onConsentChecked = { privacyOptionsRequired = ads.privacyOptionsRequired() }
+        privacyOptionsRequired = ads.privacyOptionsRequired()
         ads.start()
         setContent {
             MeldTheme {
@@ -31,7 +34,10 @@ class MainActivity : ComponentActivity() {
                 val onDone = { ads.onOperationDone() }
 
                 if (tool == null) {
-                    HomeScreen(onOpen = { toolId = it.id })
+                    HomeScreen(
+                        onOpen = { toolId = it.id },
+                        onPrivacyChoices = if (privacyOptionsRequired) ({ ads.showPrivacyOptions() }) else null,
+                    )
                 } else {
                     val back = { toolId = null }
                     BackHandler(onBack = back)

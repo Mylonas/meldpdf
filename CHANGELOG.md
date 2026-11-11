@@ -3,6 +3,17 @@
 All notable changes to MeldPDF are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-11-11
+
+### Added
+- "Privacy choices" link at the bottom of the home screen reopens the
+  ad-consent form, shown only where consent applies (EEA, UK, Switzerland).
+
+### Changed
+- Build tools and libraries brought up to date: Android Gradle Plugin 9.5,
+  Kotlin 2.4 with the Compose compiler plugin, Compose 2026.09, Google Mobile
+  Ads SDK 1.6. Compiles against API 37; still targets API 36.
+
 ## [1.0.0] - 2026-09-19
 
 First release — a native Android version of [meldpdf.com](https://meldpdf.com).
