@@ -3,7 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // Release signing comes from either a local keystore.properties (storeFile /
@@ -61,7 +61,7 @@ if (project.hasProperty("requireRelease")) {
 
 android {
     namespace = "com.mikmy.meldpdf"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.mikmy.meldpdf"
@@ -122,10 +122,6 @@ android {
         compose = true
     }
 
-    composeOptions {
-        // Matches Kotlin 1.9.24 — see the Compose/Kotlin compatibility map.
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
 
     packaging {
         resources {
@@ -153,33 +149,30 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
     // AdMob. The GMA Next-Gen SDK — Google put the classic play-services-ads
     // into maintenance mode in January 2026 and recommends this for new apps.
-    implementation("com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.3.1")
+    implementation("com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.6.0")
     // Consent for EEA/UK users. Required by Google's EU user consent policy.
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.19.1")
 
     // Jetpack Compose (Material 3) — the whole UI.
-    val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
+    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
     implementation(composeBom)
-    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Coroutines — PDF work runs off the main thread.
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 
     // PDFBox for Android (Apache-2.0) — merge/split/rotate/stamp/encrypt/text.
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
@@ -191,7 +184,7 @@ dependencies {
 
     // On-device (instrumented) tests — exercise PdfEngine against real PDFs on
     // the emulator, since PDFBox + PdfRenderer need the Android runtime.
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test:runner:1.6.2")
-    androidTestImplementation("androidx.test:core-ktx:1.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test:core-ktx:1.7.0")
 }

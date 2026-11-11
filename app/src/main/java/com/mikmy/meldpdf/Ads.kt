@@ -9,6 +9,7 @@ import com.google.android.libraries.ads.mobile.sdk.common.PreloadConfiguration
 import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig
 import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback
 import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdPreloader
+import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 
@@ -51,6 +52,7 @@ class Ads(private val activity: Activity) {
                     UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity) { formError ->
                         if (formError != null) Log.w(TAG, "consent form: ${formError.message}")
                         if (consent.canRequestAds()) initialise()
+                        onConsentChecked?.invoke()
                     }
                 },
                 { requestError ->
@@ -60,6 +62,28 @@ class Ads(private val activity: Activity) {
             )
         } catch (e: Throwable) {
             Log.w(TAG, "consent setup failed, continuing without ads", e)
+        }
+    }
+
+    /** Runs on the main thread once the consent state is known. */
+    var onConsentChecked: (() -> Unit)? = null
+
+    /** True when the user must be offered a way to change their ad-consent choice. */
+    fun privacyOptionsRequired(): Boolean = try {
+        UserMessagingPlatform.getConsentInformation(activity).privacyOptionsRequirementStatus ==
+            ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
+    } catch (e: Throwable) {
+        false
+    }
+
+    /** Reopens Google's consent form so the user can change their answer. */
+    fun showPrivacyOptions() {
+        try {
+            UserMessagingPlatform.showPrivacyOptionsForm(activity) { formError ->
+                if (formError != null) Log.w(TAG, "privacy options: ${formError.message}")
+            }
+        } catch (e: Throwable) {
+            Log.w(TAG, "privacy options failed", e)
         }
     }
 
