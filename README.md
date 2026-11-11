@@ -44,10 +44,13 @@ Keep app rules in the pure layer so CI can validate them without an emulator.
 
 ## Releasing
 
-See `PLAYSTORE.md` for store setup, and the android-app-dev skill's
+See `TESTING.md` for the step-by-step runbook to a Play testing track (signing
+key, secrets, service account, listing, and the Publish workflow), the
+paste-ready listing text in `store/listing.md`, and the android-app-dev skill's
 `references/signing-publishing.md` and `references/store-submission.md`.
 
 ## Privacy
 
 `PRIVACY.md` is the privacy policy (required by Play because the app collects the
-advertising ID). Host it and paste the URL into the Play listing.
+advertising ID). It is hosted with the other apps' policies at
+`https://mylonas.github.io/privacy/meldpdf.html` (repo `Mylonas/privacy`).

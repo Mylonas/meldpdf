@@ -3,7 +3,8 @@
 Everything that goes into the Play listing, and the tooling that produces it.
 
 ## Files
-- `icon-512.svg` — app icon source (512×512). **Replace the placeholder art.**
+- `icon-512.svg` — app icon source (512×512): the MeldPDF brand mark (white
+  document + red PDF badge on a blue gradient).
 - `feature-graphic-1024x500.svg` — feature graphic source (1024×500). Should
   *extend* the icon's visual language, not just repeat the icon.
 - `screenshots/` — phone screenshots. Normally you drop the `emulator.yml`

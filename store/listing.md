@@ -53,8 +53,8 @@ MeldPDF is the native Android version of meldpdf.com.
 - **App access:** All functionality available without a login (tick "no special access").
 - **Content rating:** complete questionnaire — no violence, no UGC, no user
   accounts. A utility app lands in the lowest brackets (Everyone).
-- **Privacy policy URL:** host PRIVACY.md and paste the URL
-  (e.g. https://meldpdf.com/app-privacy or a GitHub Pages URL).
+- **Privacy policy URL:** https://mylonas.github.io/privacy/meldpdf.html
+- **Contact email:** mikmylona@gmail.com
 
 ## Data safety answers (AdMob → Advertising ID)
 - Does the app collect or share user data? **Yes**

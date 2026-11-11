@@ -1,4 +1,6 @@
 name: Signed release bundle
+# (Edited after the initial commit so GitHub registers this workflow; files
+# pushed only in a repo's first commit are not picked up as dispatchable.)
 
 # Builds the AAB you upload to Play, signed with your upload key, but does NOT
 # push it anywhere. Use this to get a signed artifact for manual upload or to
@@ -44,7 +46,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.7"
+          gradle-version: "8.11.1"
 
       - name: Check the secrets are present
         env:
