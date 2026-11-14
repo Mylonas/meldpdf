@@ -3,7 +3,7 @@
 `com.mikmy.meldpdf` — the native Android version of [meldpdf.com](https://meldpdf.com):
 every PDF tool, running entirely on-device. Nothing is uploaded. Built with the
 android-app-dev pipeline (Kotlin + Jetpack Compose, PDFBox-Android for document
-work, Android's PdfRenderer for rasterisation, ML Kit for OCR).
+work, Android's PdfRenderer for rasterisation, ML Kit and Tesseract for OCR).
 
 ## Tools
 
@@ -12,7 +12,7 @@ work, Android's PdfRenderer for rasterisation, ML Kit for OCR).
 | Organize | Merge · Split/Extract · Delete pages · Rotate · Organize (reorder/rotate/delete) |
 | Convert | Compress · Images→PDF · PDF→JPG · PDF→PNG · PDF→Word (.docx) |
 | Edit & stamp | Page numbers · Watermark · Sign (draw + place) |
-| Text | Extract text · OCR |
+| Text | Extract text · OCR (Latin, Greek, Russian; text + searchable PDF) |
 | Security | Metadata view/strip · Protect/Unlock (password) |
 
 The pure page-range/format logic lives in `Rules.kt` and is unit-tested in CI;
