@@ -17,3 +17,6 @@
 -keep class org.bouncycastle.** { *; }
 -keep class com.tom_roush.pdfbox.** { *; }
 -keep class com.tom_roush.fontbox.** { *; }
+# Tesseract is reached through JNI; its Java side must keep its names.
+-keep class com.googlecode.tesseract.android.** { *; }
+-keep class com.googlecode.leptonica.android.** { *; }

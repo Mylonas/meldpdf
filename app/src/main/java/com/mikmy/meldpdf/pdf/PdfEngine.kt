@@ -41,6 +41,8 @@ sealed interface ToolResult {
     data class MetaOut(val rows: List<Pair<String, String>>, val cleaned: FileOut) : ToolResult
     /** A produced file plus a human "before → after" summary (compress). */
     data class CompareOut(val file: FileOut, val summary: String) : ToolResult
+    /** Recognised text plus a searchable copy of the document (OCR). */
+    data class OcrOut(val text: TextOut, val pdf: FileOut) : ToolResult
 }
 
 /** Rotation choices offered by the rotate tool. */
