@@ -48,8 +48,7 @@ class OcrTextTest {
     @Test
     fun page_text_is_the_lines_in_order() {
         val lines = listOf(OcrText.Line(" One ", 0f, 0f, 10f, 10f), OcrText.Line("Two", 0f, 20f, 10f, 30f))
-        assertEquals("One" + "
-" + "Two", OcrText.pageText(lines))
+        assertEquals(listOf("One", "Two"), OcrText.pageText(lines).lines())
     }
 
     // A 100x40 px line whose top-left is at (200, 300) px, rendered at 2 px per point on a
