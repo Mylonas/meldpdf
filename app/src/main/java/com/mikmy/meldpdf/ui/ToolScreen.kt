@@ -54,6 +54,7 @@ import com.mikmy.meldpdf.Accept
 import com.mikmy.meldpdf.Rules
 import com.mikmy.meldpdf.ToolDef
 import com.mikmy.meldpdf.pdf.OcrEngine
+import com.mikmy.meldpdf.pdf.OcrLanguage
 import com.mikmy.meldpdf.pdf.PdfEngine
 import com.mikmy.meldpdf.pdf.Rotation
 import com.mikmy.meldpdf.pdf.ToolResult
@@ -74,6 +75,7 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
     var unlockMode by remember { mutableStateOf(false) }
     var rotation by remember { mutableStateOf(Rotation.CW90) }
     var compressLevel by remember { mutableStateOf(PdfEngine.CompressLevel.BALANCED) }
+    var ocrLanguage by remember { mutableStateOf(OcrLanguage.LATIN) }
 
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -116,7 +118,7 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
                     "pagenum" -> PdfEngine.addPageNumbers(bytes.first())
                     "watermark" -> PdfEngine.watermark(bytes.first(), watermarkText)
                     "extract" -> PdfEngine.extractText(bytes.first())
-                    "ocr" -> OcrEngine.read(bytes.first(), context.cacheDir)
+                    "ocr" -> OcrEngine.read(bytes.first(), context, ocrLanguage)
                     "metadata" -> PdfEngine.metadata(bytes.first())
                     "protect" -> if (unlockMode) PdfEngine.unlock(bytes.first(), password)
                                  else PdfEngine.protect(bytes.first(), password)
@@ -206,6 +208,19 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
                         )
                     }
                 }
+                "ocr" -> Column {
+                    Text("Language of the document", fontSize = 13.sp)
+                    Spacer(Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OcrLanguage.entries.forEach { lang ->
+                            FilterChip(
+                                selected = ocrLanguage == lang,
+                                onClick = { ocrLanguage = lang },
+                                label = { Text(lang.label) },
+                            )
+                        }
+                    }
+                }
                 "protect" -> Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FilterChip(selected = !unlockMode, onClick = { unlockMode = false }, label = { Text("Add password") })
@@ -252,6 +267,13 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
                     is ToolResult.FileOut -> FileResult(r, context, clipboard)
                     is ToolResult.TextOut -> TextResult(r, clipboard, context)
                     is ToolResult.MetaOut -> MetaResult(r, context, clipboard)
+                    is ToolResult.OcrOut -> Column {
+                        TextResult(r.text, clipboard, context)
+                        Spacer(Modifier.height(12.dp))
+                        InfoCard("Searchable PDF: the same pages with the text made selectable and searchable.")
+                        Spacer(Modifier.height(12.dp))
+                        FileResult(r.pdf, context, clipboard)
+                    }
                     is ToolResult.CompareOut -> Column {
                         InfoCard(r.summary)
                         Spacer(Modifier.height(12.dp))

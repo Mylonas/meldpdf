@@ -8,10 +8,14 @@ import android.graphics.Typeface
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.mikmy.meldpdf.pdf.OcrEngine
+import com.mikmy.meldpdf.pdf.OcrLanguage
 import com.mikmy.meldpdf.pdf.PdfEngine
 import com.mikmy.meldpdf.pdf.ToolResult
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -20,7 +24,7 @@ import org.junit.runner.RunWith
 import java.io.ByteArrayOutputStream
 
 /**
- * Runs the real recogniser on the emulator against pages we draw ourselves, so
+ * Runs the real recognisers on the emulator against pages we draw ourselves, so
  * the expected words are known. A "scanned PDF" is exactly what a scanner
  * produces: a PDF whose pages are pictures with no text layer.
  */
@@ -52,28 +56,68 @@ class OcrEngineTest {
         }
     }
 
-    private fun read(bytes: ByteArray): ToolResult.TextOut =
-        runBlocking { OcrEngine.read(bytes, context.cacheDir) } as ToolResult.TextOut
+    private fun scannedPdf(vararg pages: ByteArray): ByteArray =
+        (runBlocking { PdfEngine.imagesToPdf(pages.toList()) } as ToolResult.FileOut).bytes
+
+    private fun read(bytes: ByteArray, language: OcrLanguage = OcrLanguage.LATIN): ToolResult.OcrOut =
+        runBlocking { OcrEngine.read(bytes, context, language) } as ToolResult.OcrOut
+
+    /** The text a PDF reader can select or search in [pdf]. */
+    private fun selectableText(pdf: ByteArray): Pair<Int, String> =
+        PDDocument.load(pdf).use { it.numberOfPages to PDFTextStripper().getText(it) }
 
     @Test
     fun reads_text_from_a_photo() {
         val out = read(pagePng("Invoice number 4821", "Total due 96 euro"))
-        assertTrue("got: ${out.text}", out.text.contains("Invoice", ignoreCase = true))
-        assertTrue("got: ${out.text}", out.text.contains("4821"))
-        assertTrue("got: ${out.stats}", out.stats.startsWith("1 page"))
+        assertTrue("got: ${out.text.text}", out.text.text.contains("Invoice", ignoreCase = true))
+        assertTrue("got: ${out.text.text}", out.text.text.contains("4821"))
+        assertTrue("got: ${out.text.stats}", out.text.stats.startsWith("1 page"))
     }
 
     @Test
     fun reads_every_page_of_a_scanned_pdf() {
-        val scanned = runBlocking {
-            PdfEngine.imagesToPdf(listOf(pagePng("First page heading"), pagePng("Second page heading")))
-        } as ToolResult.FileOut
-        val out = read(scanned.bytes)
-        assertTrue("got: ${out.text}", out.text.contains("--- Page 1 ---"))
-        assertTrue("got: ${out.text}", out.text.contains("First", ignoreCase = true))
-        assertTrue("got: ${out.text}", out.text.contains("--- Page 2 ---"))
-        assertTrue("got: ${out.text}", out.text.contains("Second", ignoreCase = true))
-        assertTrue("got: ${out.stats}", out.stats.startsWith("2 pages"))
+        val out = read(scannedPdf(pagePng("First page heading"), pagePng("Second page heading")))
+        val text = out.text.text
+        assertTrue("got: $text", text.contains("--- Page 1 ---"))
+        assertTrue("got: $text", text.contains("First", ignoreCase = true))
+        assertTrue("got: $text", text.contains("--- Page 2 ---"))
+        assertTrue("got: $text", text.contains("Second", ignoreCase = true))
+        assertTrue("got: ${out.text.stats}", out.text.stats.startsWith("2 pages"))
+    }
+
+    @Test
+    fun a_scanned_pdf_comes_back_searchable_with_the_same_pages() {
+        val scanned = scannedPdf(pagePng("First page heading"), pagePng("Second page heading"))
+        assertEquals("a scan has no text to select", "", selectableText(scanned).second.trim())
+        val (pages, text) = selectableText(read(scanned).pdf.bytes)
+        assertEquals(2, pages)
+        assertTrue("got: $text", text.contains("First", ignoreCase = true))
+        assertTrue("got: $text", text.contains("Second", ignoreCase = true))
+    }
+
+    @Test
+    fun a_photo_becomes_a_one_page_searchable_pdf() {
+        val (pages, text) = selectableText(read(pagePng("Invoice number 4821")).pdf.bytes)
+        assertEquals(1, pages)
+        assertTrue("got: $text", text.contains("4821"))
+    }
+
+    @Test
+    fun reads_greek() {
+        val out = read(pagePng("Καλημέρα κόσμε", "Αυτό είναι ένα τεστ"), OcrLanguage.GREEK)
+        val text = out.text.text
+        assertTrue("got: $text", text.contains("Καλημ") || text.contains("κόσμε") || text.contains("τεστ"))
+        val searchable = selectableText(out.pdf.bytes).second
+        assertTrue("got: $searchable", searchable.any { it in 'α'..'ω' })
+    }
+
+    @Test
+    fun reads_russian() {
+        val out = read(pagePng("Привет мир", "Это простой тест"), OcrLanguage.RUSSIAN)
+        val text = out.text.text
+        assertTrue("got: $text", text.contains("Привет") || text.contains("мир") || text.contains("тест"))
+        val searchable = selectableText(out.pdf.bytes).second
+        assertTrue("got: $searchable", searchable.any { it in 'а'..'я' })
     }
 
     @Test

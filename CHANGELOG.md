@@ -3,6 +3,21 @@
 All notable changes to MeldPDF are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-11-14
+
+### Added
+- **Searchable PDF from OCR:** as well as the plain text, OCR now returns the
+  document itself with the recognised words laid over each page as invisible
+  text, so it can be searched, selected and copied in any PDF reader. A photo
+  becomes a one-page searchable PDF. Rotated pages are handled.
+- **Greek and Russian OCR:** choose the document language before running.
+  These use Tesseract with bundled language data; English and other
+  Latin-script languages still use ML Kit. All of it runs on the device.
+
+### Changed
+- The app is about 9 MB larger because of the Tesseract engine and the two
+  language models.
+
 ## [1.3.0] - 2026-11-14
 
 ### Added
