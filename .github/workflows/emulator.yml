@@ -63,6 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: meldpdf-emulator
+          retention-days: 2
           path: |
             artifacts/**
             app/build/reports/androidTests/**

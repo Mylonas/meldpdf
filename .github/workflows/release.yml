@@ -114,6 +114,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: play-release-v${{ inputs.versionCode }}
+          retention-days: 7
           path: |
             app/build/outputs/bundle/release/*.aab
             app/build/outputs/apk/release/*.apk
