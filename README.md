@@ -12,7 +12,7 @@ work, Android's PdfRenderer for rasterisation, ML Kit for OCR).
 | Organize | Merge · Split/Extract · Delete pages · Rotate · Organize (reorder/rotate/delete) |
 | Convert | Compress · Images→PDF · PDF→JPG · PDF→PNG · PDF→Word (.docx) |
 | Edit & stamp | Page numbers · Watermark · Sign (draw + place) |
-| Text | Extract text · *OCR (soon)* |
+| Text | Extract text · OCR |
 | Security | Metadata view/strip · Protect/Unlock (password) |
 
 The pure page-range/format logic lives in `Rules.kt` and is unit-tested in CI;

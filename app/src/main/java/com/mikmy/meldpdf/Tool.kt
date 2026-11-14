@@ -67,7 +67,7 @@ object Tools {
         ToolDef("sign", "Sign PDF", "Draw your signature", Icons.Filled.Draw, Accept.PDF, multi = false, category = Category.EDIT),
         // Text
         ToolDef("extract", "Extract text", "Copy text from a PDF", Icons.Filled.Description, Accept.PDF, multi = false, category = Category.TEXT),
-        ToolDef("ocr", "OCR scanned", "Read scanned text", Icons.Filled.Visibility, Accept.PDF_OR_IMAGE, multi = false, category = Category.TEXT, implemented = false),
+        ToolDef("ocr", "OCR scanned", "Read text from scans and photos", Icons.Filled.Visibility, Accept.PDF_OR_IMAGE, multi = false, category = Category.TEXT),
         // Security
         ToolDef("metadata", "Metadata", "View and strip info", Icons.Filled.Info, Accept.PDF, multi = false, category = Category.SECURITY),
         ToolDef("protect", "Protect / Unlock", "Password a PDF", Icons.Filled.Lock, Accept.PDF, multi = false, category = Category.SECURITY),
