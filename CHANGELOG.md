@@ -3,6 +3,14 @@
 All notable changes to MeldPDF are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-14
+
+### Added
+- **OCR scanned:** reads the text out of scanned PDFs and photos, on-device
+  (ML Kit, Latin script). Multi-page PDFs come back with a heading per page;
+  the first 60 pages are read. Copy the text or share it as a .txt file.
+  This completes the tool set: all 17 tools now work.
+
 ## [1.2.1] - 2026-11-11
 
 ### Added

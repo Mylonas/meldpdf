@@ -53,6 +53,7 @@ import androidx.core.content.FileProvider
 import com.mikmy.meldpdf.Accept
 import com.mikmy.meldpdf.Rules
 import com.mikmy.meldpdf.ToolDef
+import com.mikmy.meldpdf.pdf.OcrEngine
 import com.mikmy.meldpdf.pdf.PdfEngine
 import com.mikmy.meldpdf.pdf.Rotation
 import com.mikmy.meldpdf.pdf.ToolResult
@@ -115,6 +116,7 @@ fun ToolScreen(tool: ToolDef, onBack: () -> Unit, onDone: () -> Unit = {}) {
                     "pagenum" -> PdfEngine.addPageNumbers(bytes.first())
                     "watermark" -> PdfEngine.watermark(bytes.first(), watermarkText)
                     "extract" -> PdfEngine.extractText(bytes.first())
+                    "ocr" -> OcrEngine.read(bytes.first(), context.cacheDir)
                     "metadata" -> PdfEngine.metadata(bytes.first())
                     "protect" -> if (unlockMode) PdfEngine.unlock(bytes.first(), password)
                                  else PdfEngine.protect(bytes.first(), password)
